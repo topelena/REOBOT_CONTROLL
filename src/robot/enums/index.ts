@@ -1,1 +1,1 @@
-export * from "./orientation.enum";
+export * from './orientation.enum';

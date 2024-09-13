@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, Matches, Min,} from 'class-validator';
+import { IsNumber, IsString, Matches, Min } from 'class-validator';
 import { Orientation } from '../enums';
 
 export class Position {
@@ -27,5 +27,3 @@ export class Position {
   @Matches(/^[NESW]$/, { message: 'Orientation must be one of N, E, S, W' })
   orientation: Orientation;
 }
-
-
