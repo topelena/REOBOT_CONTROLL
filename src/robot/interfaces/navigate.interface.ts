@@ -1,7 +1,7 @@
-import { IPosition } from './position.interface'; 
+import { IPosition } from './position.interface';
 
 export interface INavigateDto {
-  roomSize: number[]; 
-  startPosition: IPosition; 
-  commands: string; 
+  roomSize: number[];
+  startPosition: IPosition;
+  commands: string;
 }

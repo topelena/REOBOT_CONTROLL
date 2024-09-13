@@ -1,6 +1,6 @@
 import { Orientation } from '../enums';
- export interface IPosition {
-    x: number;
-    y: number;
-    orientation: Orientation;
-  }
+export interface IPosition {
+  x: number;
+  y: number;
+  orientation: Orientation;
+}

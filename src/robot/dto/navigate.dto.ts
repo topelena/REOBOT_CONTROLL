@@ -8,7 +8,7 @@ import {
   Min,
 } from 'class-validator';
 import { Position } from './position.dto';
-import {INavigateDto}from '../interfaces'
+import { INavigateDto } from '../interfaces';
 
 export class NavigateDto implements INavigateDto {
   @ApiProperty({
