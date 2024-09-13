@@ -3,7 +3,7 @@ import { RobotService } from './robot.service';
 import { NavigateDto } from './dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('robot') 
+@ApiTags('robot')
 @Controller('robot')
 export class RobotController {
   constructor(private readonly robotService: RobotService) {}

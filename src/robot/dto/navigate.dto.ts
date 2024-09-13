@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsArray, ArrayMinSize, Matches, Min } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+  IsArray,
+  ArrayMinSize,
+  Matches,
+  Min,
+} from 'class-validator';
 import { Position } from './position.dto';
-
 
 export class NavigateDto {
   @ApiProperty({
@@ -10,8 +16,14 @@ export class NavigateDto {
   })
   @IsArray()
   @ArrayMinSize(2)
-  @IsNumber({}, { each: true, message: 'Room size must be an array of two numbers' })
-  @Min(1, { each: true, message: 'Room dimensions must be greater than or equal to 1' })
+  @IsNumber(
+    {},
+    { each: true, message: 'Room size must be an array of two numbers' },
+  )
+  @Min(1, {
+    each: true,
+    message: 'Room dimensions must be greater than or equal to 1',
+  })
   roomSize: [number, number];
 
   @ApiProperty({
