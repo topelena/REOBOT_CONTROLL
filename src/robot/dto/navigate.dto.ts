@@ -8,8 +8,9 @@ import {
   Min,
 } from 'class-validator';
 import { Position } from './position.dto';
+import { INavigateDto } from '../interfaces';
 
-export class NavigateDto {
+export class NavigateDto implements INavigateDto {
   @ApiProperty({
     description: 'Room size represented as width and depth',
     example: [5, 5],
