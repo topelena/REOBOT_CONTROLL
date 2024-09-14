@@ -6,7 +6,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { NavigateDto, Position } from './robot/dto';
+import { NavigateDto, Position, ReportDto } from './robot/dto';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -27,7 +27,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [NavigateDto, Position],
+    extraModels: [NavigateDto, Position, ReportDto],
   });
   SwaggerModule.setup('swagger', app, document);
   await app.listen(process.env.PORT || 8080, '0.0.0.0');
