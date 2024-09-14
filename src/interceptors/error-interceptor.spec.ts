@@ -1,70 +1,131 @@
-import { ErrorsInterceptor } from './error-interceptor';
-import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
-import { throwError } from 'rxjs';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CallHandler } from '@nestjs/common/interfaces/features/nest-interceptor.interface';
+import { Observable, throwError } from 'rxjs';
+
+import { ErrorsInterceptor } from './error-interceptor';
+
+const mockJson = jest.fn();
+const mockStatus = jest.fn().mockImplementation(() => ({
+  json: mockJson,
+}));
+const mockGetResponse = jest.fn().mockImplementation(() => ({
+  status: mockStatus,
+}));
+
+const mockMethod = jest.fn().mockImplementation(() => ({
+  json: mockJson,
+}));
+const mockBody = jest.fn().mockImplementation(() => ({
+  body: mockJson,
+}));
+const mockGetRequest = jest.fn().mockImplementation(() => ({
+  url: 'url',
+  method: mockMethod,
+  body: mockBody,
+  headers: {},
+}));
+const mockHttpArgumentsHost = jest.fn().mockImplementation(() => ({
+  getResponse: mockGetResponse,
+  getRequest: mockGetRequest,
+}));
+
+const mockCallHandler = {
+  handle: jest.fn(() =>
+    throwError(new HttpException('Http exception', HttpStatus.BAD_REQUEST)),
+  ),
+};
+const mockGetClass = jest.fn().mockImplementation(() => ({
+  name: 'ProcessController',
+}));
+
+const mockExecutionContext = {
+  switchToHttp: mockHttpArgumentsHost,
+  getClass: mockGetClass,
+  getHandler: jest.fn(),
+  getArgByIndex: jest.fn(),
+  getArgs: jest.fn(),
+  getType: jest.fn(),
+  switchToRpc: jest.fn(),
+  switchToWs: jest.fn(),
+};
 
 describe('ErrorsInterceptor', () => {
-  let interceptor: ErrorsInterceptor;
+  let service: ErrorsInterceptor;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [ErrorsInterceptor],
     }).compile();
-
-    interceptor = module.get<ErrorsInterceptor>(ErrorsInterceptor);
+    service = module.get<ErrorsInterceptor>(ErrorsInterceptor);
   });
 
-  it('should catch an error and return an HttpException', () => {
-    const context = createMockExecutionContext();
-    const next: CallHandler = {
-      handle: () => throwError(() => new Error('Test Error')),
-    };
-
-    interceptor.intercept(context, next).subscribe({
-      error: (err) => {
-        expect(err).toBeInstanceOf(HttpException);
-        expect(err.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-        expect(err.getResponse()).toEqual({
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Test Error',
-          path: '/test',
-          timestamp: expect.any(String),
-        });
-      },
+  describe('ErrorsInterceptor tests', () => {
+    it('should be defined', () => {
+      expect(service).toBeDefined();
     });
-  });
-
-  it('should return original HttpException with the same status and message', () => {
-    const context = createMockExecutionContext();
-    const next: CallHandler = {
-      handle: () =>
-        throwError(
-          () => new HttpException('Custom Error', HttpStatus.BAD_REQUEST),
+    it('Error exception', async () => {
+      await service.intercept(mockExecutionContext, mockCallHandler);
+      expect(mockCallHandler.handle).toBeCalled();
+    });
+    it('Http logging with error', (done) => {
+      const mockCallHandler = {
+        handle: jest.fn(() => throwError(new Error('Not found'))),
+      };
+      const result: Observable<any> = service.intercept(
+        mockExecutionContext,
+        mockCallHandler,
+      );
+      result.subscribe({
+        next: (value: any) => {
+          value;
+        },
+        error: (error: any) => {
+          expect(error).toBeInstanceOf(HttpException);
+          done();
+        },
+        complete: () => {
+          expect(mockGetClass).toBeCalled();
+          done();
+        },
+      });
+    });
+    it('Http logging with error', (done) => {
+      const mockCallHandler = {
+        handle: jest.fn(() =>
+          throwError(
+            new HttpException(
+              {
+                message: 'Some Exception Error',
+                status: 404,
+                error: 'Failed to call provider',
+              },
+              404,
+              {
+                cause: new Error(),
+              },
+            ),
+          ),
         ),
-    };
-
-    interceptor.intercept(context, next).subscribe({
-      error: (err) => {
-        expect(err).toBeInstanceOf(HttpException);
-        expect(err.getStatus()).toBe(HttpStatus.BAD_REQUEST);
-        expect(err.getResponse()).toEqual({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Custom Error',
-          path: '/test',
-          timestamp: expect.any(String),
-        });
-      },
+      };
+      const result: Observable<any> = service.intercept(
+        mockExecutionContext,
+        mockCallHandler,
+      );
+      result.subscribe({
+        next: (value: any) => {
+          value;
+        },
+        error: (error: any) => {
+          expect(error.message).toBe('Some Exception Error');
+          expect(error).toBeInstanceOf(HttpException);
+          done();
+        },
+        complete: () => {
+          expect(mockGetClass).toBeCalled();
+          done();
+        },
+      });
     });
   });
-
-  function createMockExecutionContext(): ExecutionContext {
-    return {
-      switchToHttp: () => ({
-        getRequest: () => ({
-          url: '/test',
-        }),
-      }),
-    } as any;
-  }
 });

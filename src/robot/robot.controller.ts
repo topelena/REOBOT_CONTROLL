@@ -1,21 +1,43 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Version, ValidationPipe, UsePipes, BadRequestException,} from '@nestjs/common';
 import { RobotService } from './robot.service';
-import { NavigateDto } from './dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { NavigateDto, ReportDto } from './dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ValidationError } from 'class-validator';
+import {checkValidationErrors} from '../utils'
+import { IReportDto } from './interfaces';
 
-@ApiTags('robot')
+@ApiTags('API')
 @Controller('robot')
+@UsePipes(
+  new ValidationPipe({
+    exceptionFactory: (errors: ValidationError[]) => {
+      const errorsMessages = checkValidationErrors(errors);
+      return new BadRequestException(
+       
+        `Bad Request: ["${errorsMessages.join(
+          '"|"',
+        )}"].`,
+      );
+    },
+  }),
+)
 export class RobotController {
   constructor(private readonly robotService: RobotService) {}
-
+ 
+  @Version('1')
   @Post('navigate')
   @ApiOperation({ summary: 'Navigate the robot through the grid' })
+  @ApiBody({
+    description: 'Robot navigation API',
+    type: NavigateDto,
+  })
   @ApiResponse({
     status: 200,
     description: 'The final position and orientation of the robot.',
+    type: ReportDto,
     schema: {
       example: {
-        report: '1 3 N',
+        report: {x:1, y:3,  orientation: "N"},
       },
     },
   })
@@ -23,8 +45,7 @@ export class RobotController {
     status: 400,
     description: 'Invalid input data or robot out of bounds',
   })
-  //@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-  navigate(@Body() navigateDto: NavigateDto): string {
+  navigate(@Body() navigateDto: NavigateDto): IReportDto {
     return this.robotService.navigate(navigateDto);
   }
 }

@@ -49,7 +49,7 @@ describe('RobotController', () => {
         commands: 'LFFRFRFRFF',
       };
 
-      const mockResult = 'Report: 1 3 N';
+      const mockResult = {report: {x:1, y:3, orientation: Orientation.N}};
       jest.spyOn(robotService, 'navigate').mockReturnValue(mockResult);
 
       const result = robotController.navigate(navigateDto);

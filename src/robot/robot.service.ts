@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NavigateDto, Position } from './dto';
 import { Orientation } from './enums';
 import { NavigateValidationService } from './navigate-validation.service';
+import { IReportDto } from './interfaces';
 
 @Injectable()
 export class RobotService {
@@ -24,7 +25,7 @@ export class RobotService {
     return turnMap[direction][orientation];
   }
 
-  navigate(navigateDto: NavigateDto): string {
+  navigate(navigateDto: NavigateDto): IReportDto {
     const { roomSize, startPosition, commands } = navigateDto;
     let { x, y, orientation } = startPosition;
 
@@ -32,27 +33,25 @@ export class RobotService {
 
     ({ x, y, orientation } = this.processCommands(
       commands,
-      x,
-      y,
-      orientation,
+      startPosition,
       roomSize,
     ));
-
-    return `Report: ${x} ${y} ${orientation}`;
+  const report: IReportDto = {report: {x, y, orientation}}
+    return report;
   }
 
   private processCommands(
     commands: string,
-    x: number,
-    y: number,
-    orientation: Orientation,
+    startPosition: Position,
     roomSize: number[],
   ): Position {
+    let { x, y, orientation } = startPosition;
+ 
     for (const command of commands) {
-      ({ x, y, orientation } = this.processCommand(x, y, orientation, command));
+      ({ x, y, orientation } = this.processCommand({x, y, orientation}, command));
 
       if (this.isOutOfBounds(x, y, roomSize)) {
-        throw new Error(`Out of bounds at ${x} ${y}`);
+        throw new ForbiddenException(`Out of bounds at ${x} ${y}`);
       }
     }
 
@@ -60,11 +59,10 @@ export class RobotService {
   }
 
   private processCommand(
-    x: number,
-    y: number,
-    orientation: Orientation,
+    startPosition: Position,
     command: string,
   ): Position {
+    let { x, y, orientation } = startPosition;
     switch (command) {
       case 'L':
         orientation = this.turn(orientation, 'L');
@@ -76,7 +74,7 @@ export class RobotService {
         ({ x, y } = this.moveForward(x, y, orientation));
         break;
       default:
-        throw new Error('Invalid command');
+        throw new ForbiddenException('Invalid command');
     }
     return { x, y, orientation };
   }
@@ -100,7 +98,7 @@ export class RobotService {
         x -= 1;
         break;
       default:
-        throw new Error('Invalid orientation');
+        throw new ForbiddenException('Invalid orientation');
     }
 
     return { x, y, orientation };

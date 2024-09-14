@@ -4,6 +4,7 @@ import {
   IsString,
   IsArray,
   ArrayMinSize,
+  ArrayMaxSize,
   Matches,
   Min,
 } from 'class-validator';
@@ -17,6 +18,7 @@ export class NavigateDto implements INavigateDto {
   })
   @IsArray()
   @ArrayMinSize(2)
+  @ArrayMaxSize(2)
   @IsNumber(
     {},
     { each: true, message: 'Room size must be an array of two numbers' },
