@@ -3,7 +3,6 @@ import { IsNumber, IsEnum, Matches, Min } from 'class-validator';
 import { Orientation } from '../enums';
 import { IPosition } from '../interfaces';
 
-
 export class Position implements IPosition {
   @ApiProperty({
     description: 'The x-coordinate of the robot',

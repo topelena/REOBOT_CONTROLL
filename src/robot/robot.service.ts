@@ -36,7 +36,7 @@ export class RobotService {
       startPosition,
       roomSize,
     ));
-  const report: IReportDto = {report: {x, y, orientation}}
+    const report: IReportDto = { report: { x, y, orientation } };
     return report;
   }
 
@@ -46,9 +46,12 @@ export class RobotService {
     roomSize: number[],
   ): Position {
     let { x, y, orientation } = startPosition;
- 
+
     for (const command of commands) {
-      ({ x, y, orientation } = this.processCommand({x, y, orientation}, command));
+      ({ x, y, orientation } = this.processCommand(
+        { x, y, orientation },
+        command,
+      ));
 
       if (this.isOutOfBounds(x, y, roomSize)) {
         throw new ForbiddenException(`Out of bounds at ${x} ${y}`);
@@ -58,10 +61,7 @@ export class RobotService {
     return { x, y, orientation };
   }
 
-  private processCommand(
-    startPosition: Position,
-    command: string,
-  ): Position {
+  private processCommand(startPosition: Position, command: string): Position {
     let { x, y, orientation } = startPosition;
     switch (command) {
       case 'L':

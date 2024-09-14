@@ -26,8 +26,10 @@ describe('RobotService', () => {
         startPosition: { x: 1, y: 2, orientation: Orientation.N },
         commands: 'F',
       };
-      const expectedResult: IReportDto = {report: {orientation: Orientation.N, x: 1, y: 3}};
-      
+      const expectedResult: IReportDto = {
+        report: { orientation: Orientation.N, x: 1, y: 3 },
+      };
+
       const result = robotService.navigate(navigateDto);
       expect(result).toEqual(expectedResult);
     });
@@ -57,13 +59,14 @@ describe('RobotService', () => {
     });
 
     it('should correctly turn left and right during navigation', () => {
-
       const navigateDto: NavigateDto = {
         roomSize: [5, 5],
         startPosition: { x: 1, y: 1, orientation: Orientation.N },
         commands: 'RFFLFF',
       };
-      const expectedResult: IReportDto = {report: {orientation: Orientation.N, x: 3, y: 3}};
+      const expectedResult: IReportDto = {
+        report: { orientation: Orientation.N, x: 3, y: 3 },
+      };
 
       const result = robotService.navigate(navigateDto);
 
@@ -86,7 +89,7 @@ describe('RobotService', () => {
   });
 
   describe('processCommand', () => {
-    const startPosition: IPosition = {x:1, y:1, orientation:Orientation.N }
+    const startPosition: IPosition = { x: 1, y: 1, orientation: Orientation.N };
     it('should process the "L" command and turn the robot left', () => {
       const result = robotService['processCommand'](startPosition, 'L');
 
@@ -106,7 +109,6 @@ describe('RobotService', () => {
     });
 
     it('should throw an error for an invalid command', () => {
-
       expect(() =>
         robotService['processCommand'](startPosition, 'X'),
       ).toThrowError('Invalid command');
@@ -115,8 +117,7 @@ describe('RobotService', () => {
 
   describe('moveForward', () => {
     it('should move forward when facing North', () => {
-      
-      const result = robotService['moveForward'](1, 1, Orientation.N );
+      const result = robotService['moveForward'](1, 1, Orientation.N);
 
       expect(result).toEqual({ x: 1, y: 2, orientation: Orientation.N });
     });
@@ -128,7 +129,7 @@ describe('RobotService', () => {
     });
 
     it('should move forward when facing South', () => {
-     const result = robotService['moveForward'](1, 1, Orientation.S);
+      const result = robotService['moveForward'](1, 1, Orientation.S);
 
       expect(result).toEqual({ x: 1, y: 0, orientation: Orientation.S });
     });
@@ -152,7 +153,6 @@ describe('RobotService', () => {
     });
 
     it('should return false when the robot is within bounds', () => {
-    
       const x = 1,
         y = 1,
         roomSize = [5, 5];

@@ -1,9 +1,17 @@
-import { Body, Controller, Post, Version, ValidationPipe, UsePipes, BadRequestException,} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Version,
+  ValidationPipe,
+  UsePipes,
+  BadRequestException,
+} from '@nestjs/common';
 import { RobotService } from './robot.service';
 import { NavigateDto, ReportDto } from './dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { ValidationError } from 'class-validator';
-import {checkValidationErrors} from '../utils'
+import { checkValidationErrors } from '../utils';
 import { IReportDto } from './interfaces';
 
 @ApiTags('API')
@@ -13,17 +21,14 @@ import { IReportDto } from './interfaces';
     exceptionFactory: (errors: ValidationError[]) => {
       const errorsMessages = checkValidationErrors(errors);
       return new BadRequestException(
-       
-        `Bad Request: ["${errorsMessages.join(
-          '"|"',
-        )}"].`,
+        `Bad Request: ["${errorsMessages.join('"|"')}"].`,
       );
     },
   }),
 )
 export class RobotController {
   constructor(private readonly robotService: RobotService) {}
- 
+
   @Version('1')
   @Post('navigate')
   @ApiOperation({ summary: 'Navigate the robot through the grid' })
@@ -37,7 +42,7 @@ export class RobotController {
     type: ReportDto,
     schema: {
       example: {
-        report: {x:1, y:3,  orientation: "N"},
+        report: { x: 1, y: 3, orientation: 'N' },
       },
     },
   })
