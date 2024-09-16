@@ -6,25 +6,6 @@ import { IReportDto } from './interfaces';
 
 @Injectable()
 export class RobotService {
-  private turn(orientation: Orientation, direction: 'L' | 'R'): Orientation {
-    const turnMap = {
-      L: {
-        [Orientation.N]: Orientation.W,
-        [Orientation.W]: Orientation.S,
-        [Orientation.S]: Orientation.E,
-        [Orientation.E]: Orientation.N,
-      },
-      R: {
-        [Orientation.N]: Orientation.E,
-        [Orientation.E]: Orientation.S,
-        [Orientation.S]: Orientation.W,
-        [Orientation.W]: Orientation.N,
-      },
-    };
-
-    return turnMap[direction][orientation];
-  }
-
   navigate(navigateDto: NavigateDto): IReportDto {
     const { roomSize, startPosition, commands } = navigateDto;
     let { x, y, orientation } = startPosition;
@@ -77,6 +58,25 @@ export class RobotService {
         throw new ForbiddenException('Invalid command');
     }
     return { x, y, orientation };
+  }
+
+  private turn(orientation: Orientation, direction: 'L' | 'R'): Orientation {
+    const turnMap = {
+      L: {
+        [Orientation.N]: Orientation.W,
+        [Orientation.W]: Orientation.S,
+        [Orientation.S]: Orientation.E,
+        [Orientation.E]: Orientation.N,
+      },
+      R: {
+        [Orientation.N]: Orientation.E,
+        [Orientation.E]: Orientation.S,
+        [Orientation.S]: Orientation.W,
+        [Orientation.W]: Orientation.N,
+      },
+    };
+
+    return turnMap[direction][orientation];
   }
 
   private moveForward(
