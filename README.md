@@ -17,20 +17,7 @@ Install node via nvm:
 
 Node version can be found [here](.nvmrc).
 
-Install [k6.io](https://k6.io/docs/getting-started/installation/).
 
-### Authorization
-
-
-
-### Env veriables
-
-
-Create `.env` file in the project root directory, set env variables:
-
-| Environment variable    | Comment                                                  | Example            |
-| ----------------------- | -------------------------------------------------------- | ------------------ |
-|                         |                                                          |                    |
 
 
 
@@ -77,4 +64,24 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+Additional information
+- All the logic located in robot.service
+- You can use Swagger to test API http://localhost:8080/swagger
+- You can use Swagger to check documentation for the API (request, response)
+- Added health check in app.controller
+- Added coverage for unit tests
+- Added e2e tests
+- Added logging and http error interceptors
+- Added validation pipe and navigate-validation.service
+- Added
+    "husky": {
+    "hooks": {
+      "pre-commit": "npm run pre-commit",
+      "pre-push": "npm run test:cov",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
 
+If I have more time 
+- I will add config service 
+- I will think about to give robot a poaaibility to go back
